@@ -23,7 +23,7 @@ async def fetch_weather(
         'start_date' : start_date,
         'end_date' : end_date,
         'daily' : ','.join(DAILY_Variables),
-        'timezone' : 'auto'     #auto will select based on lat-long if not given will take UTC
+        'timezone' : 'auto'     #auto will select based on lat-long, if not given will take UTC
     }
 
     try:
