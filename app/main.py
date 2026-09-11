@@ -65,3 +65,14 @@ async def store_weather_data(payload: WeatherRequest):
 
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to store data') from exc
+
+
+@app.get('/list-weather-files')
+def list_weather_files():
+    try:
+        return {
+            'files': storage_service.list_files()
+        }
+
+    except Exception as exc:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to list weather files') from exc
