@@ -28,6 +28,11 @@ class StorageService:
                 }
             )
 
+        files.sort(
+            key=lambda file: file['created_at'] or '',
+            reverse=True
+        )
+
         return files
 
     def get_json(self,file_name: str) -> dict | None:
