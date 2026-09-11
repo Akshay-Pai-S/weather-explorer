@@ -29,3 +29,8 @@ class StorageService:
             )
 
         return files
+
+    def get_json(self,file_name: str) -> dict | None:
+        blob=self.bucket.blob(file_name)
+        print('blob', blob.exists())
+        return json.loads(blob.download_as_text()) if blob.exists() else None

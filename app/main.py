@@ -28,7 +28,7 @@ async def validation_exception_handler(
         )
 
     return JSONResponse(
-        status_code=400,
+        status_code=status.HTTP_400_BAD_REQUEST,
         content={
             "status": "error",
             "message": "Invalid request",
@@ -76,3 +76,24 @@ def list_weather_files():
 
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to list weather files') from exc
+
+
+@app.get('/weather-file-content/{file_name:path}')
+def get_weather_file_content(file_name: str):
+    try:
+        weather_data = storage_service.get_json(file_name=file_name)
+        print('weather data',weather_data)
+
+        if weather_data is None:
+            return JSONResponse(
+                status_code=status.HTTP_404_NOT_FOUND,
+                content={
+                    'status' : 'error',
+                    'message' : 'not found'
+                }
+            )
+
+        return weather_data
+
+    except Exception as exc:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to retrive weather file') from exc
