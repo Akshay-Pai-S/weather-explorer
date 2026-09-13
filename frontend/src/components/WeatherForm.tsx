@@ -1,18 +1,11 @@
+import { storeWeatherData } from "../services/weatherApi";
+import type {
+  InputFieldConfig,
+  WeatherFormData,
+  WeatherRequest,
+} from "../types/weather";
 import InputField from "./InputField";
 import React, { useState } from "react";
-
-type WeatherFormData = {
-  latitude: string;
-  longitude: string;
-  startDate: string;
-  endDate: string;
-};
-type InputFieldConfig = {
-  id: string;
-  label: string;
-  type: "number" | "date";
-  field: keyof WeatherFormData;
-};
 
 const inputField: InputFieldConfig[] = [
   {
@@ -49,6 +42,10 @@ export default function WeatherForm() {
     endDate: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [storedFile, setStoredFile] = useState("");
+
   function handleChange(feild: keyof WeatherFormData, value: string) {
     setFormData((previous) => ({
       ...previous,
@@ -56,9 +53,29 @@ export default function WeatherForm() {
     }));
   }
 
-  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>){
-    event.preventDefault()
-    console.log(formData)
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setError("");
+    setStoredFile("");
+
+    const requestData: WeatherRequest = {
+      latitude: Number(formData.latitude),
+      longitude: Number(formData.longitude),
+      start_date: formData.startDate,
+      end_date: formData.endDate,
+    };
+    try {
+      setLoading(true);
+      const response = await storeWeatherData(requestData);
+      setStoredFile(response.file);
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to store weather data",
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -75,7 +92,9 @@ export default function WeatherForm() {
             onChange={(value) => handleChange(input.field, value)}
           />
         ))}
-        <button type="submit">Store data</button>
+        {error && (<p role="alert">{error}</p>)}
+        <button disabled={loading} type="submit"> {loading ? 'Storing Data...' : 'Store data'}</button>
+        {storedFile && (<p>Stored file : {storedFile}</p>)}
       </form>
     </section>
   );
