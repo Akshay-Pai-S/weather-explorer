@@ -15,11 +15,8 @@ class StorageService:
     def list_files(self) -> list[dict]:
         blobs=self.client.list_blobs(self.bucket)
         files=[]
-        print('blobs',blobs)
 
         for blob in blobs:
-            print('blob',blob)
-            print('files',files)
             files.append(
                 {
                     'name': blob.name,
@@ -37,5 +34,4 @@ class StorageService:
 
     def get_json(self,file_name: str) -> dict | None:
         blob=self.bucket.blob(file_name)
-        print('blob', blob.exists())
         return json.loads(blob.download_as_text()) if blob.exists() else None

@@ -11,13 +11,13 @@ class WeatherRequest(BaseModel):
     def validate_date_range(self):
         if self.start_date > self.end_date:
             raise ValueError(
-                "start_date must be before or equal to end_date"
+                "Start Date must be before or equal to End Date"
             )
 
         days = (self.end_date - self.start_date).days + 1
         if days > 31:
             raise ValueError(
-                "date range must not exceed 31 days"
+                "Date range must not exceed 31 days"
             )
 
         return self

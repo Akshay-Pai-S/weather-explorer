@@ -3,12 +3,21 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from models.weather import WeatherRequest
 from services.weather_service import fetch_weather
 from services.storage_service import StorageService
 
 app=FastAPI(title='Weather explorer')
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 
 storage_service=StorageService()
 
@@ -20,10 +29,19 @@ async def validation_exception_handler(
     errors = []
 
     for error in exc.errors():
+        loc=error.get('loc', ())
+        field=loc[-1] if loc else 'request'
+        msg=error['msg'].replace('Value error, ', '')
+
+        if field == 'latitude':
+            msg='Latitude must be between -90 and 90.'
+        elif field == 'longitude':
+            msg='Longitude must be between -180 and 180.'
+        
         errors.append(
             {
-                "field": ".".join(str(location) for location in error["loc"]),
-                "message": error["msg"],
+                "field": field,
+                "message": msg,
             }
         )
 
@@ -82,7 +100,6 @@ def list_weather_files():
 def get_weather_file_content(file_name: str):
     try:
         weather_data = storage_service.get_json(file_name=file_name)
-        print('weather data',weather_data)
 
         if weather_data is None:
             return JSONResponse(
