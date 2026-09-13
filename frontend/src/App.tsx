@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import WeatherForm from "./components/WeatherForm";
-import type { StoredFile } from "./types/weather";
-import { listWeatherFiles } from "./services/weatherApi";
+import type { StoredFile, WeatherFileContent } from "./types/weather";
+import { getWeatherFileContent, listWeatherFiles } from "./services/weatherApi";
 import StoredFiles from "./components/StoredFiles";
+import { transformWeatherData } from "./utils/transformWeather";
+import WeatherTable from "./components/WeatherTable";
 
 function App() {
   const [files, setFiles] = useState<StoredFile[]>([]);
+  const [selectedWeather, setSelectWeather] =
+    useState<WeatherFileContent | null>(null);
 
   useEffect(() => {
     const loadFiles = async () => {
@@ -18,10 +22,25 @@ function App() {
     };
     loadFiles();
   }, []);
+
+  async function handleFileSelect(fileName: string) {
+    try {
+      const data = await getWeatherFileContent(fileName);
+      setSelectWeather(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const weatherDay = selectedWeather
+    ? transformWeatherData(selectedWeather)
+    : [];
+
   return (
     <>
       <WeatherForm />
-      <StoredFiles files={files} />
+      <StoredFiles files={files} onFileSelect={handleFileSelect} />
+      <WeatherTable data={weatherDay} />
     </>
   );
 }

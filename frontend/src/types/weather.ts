@@ -36,4 +36,30 @@ export type ListWeatherFilesResponse = {
 
 export type StoredFileProps = {
   files: StoredFile[];
+  onFileSelect: (fileName: string) => void;
+};
+
+export type WeatherFileContent = {
+  latitude: number;
+  longitude: number;
+  timezone: string;
+  daily: {
+    time: string[];
+    temperature_2m_max: number[];
+    temperature_2m_min: number[];
+    apparent_temperature_max: number[];
+    apparent_temperature_min: number[];
+  };
+};
+
+export type WeatherDay = {
+  date: string;
+  tempMax: number;
+  tempMin: number;
+  apparentTempMax: number;
+  apparentTempMin: number;
+};
+
+export type WeatherTableProps = {
+  data: WeatherDay[];
 };
