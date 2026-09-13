@@ -19,7 +19,21 @@ export type WeatherRequest = {
   end_date: string;
 };
 
-export type StoreWeatherResponce = {
+export type StoreWeatherResponse = {
   status: string;
   file: string;
+};
+
+export type StoredFile = {
+  name: string;
+  size: number;
+  created_at: string;
+};
+
+export type ListWeatherFilesResponse = {
+  files: StoredFile[];
+};
+
+export type StoredFileProps = {
+  files: StoredFile[];
 };

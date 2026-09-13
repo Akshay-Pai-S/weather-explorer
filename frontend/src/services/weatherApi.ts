@@ -1,11 +1,15 @@
-import type { WeatherRequest, StoreWeatherResponce } from "../types/weather";
+import type {
+  WeatherRequest,
+  StoreWeatherResponse,
+  ListWeatherFilesResponse,
+} from "../types/weather";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
 export async function storeWeatherData(
   data: WeatherRequest,
-): Promise<StoreWeatherResponce> {
-  const responce = await fetch(`${API_BASE_URL}/store-weather-data`, {
+): Promise<StoreWeatherResponse> {
+  const response = await fetch(`${API_BASE_URL}/store-weather-data`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -13,15 +17,27 @@ export async function storeWeatherData(
     body: JSON.stringify(data),
   });
 
-  const responceData = await responce.json();
+  const responseData = await response.json();
 
-  if (!responce.ok) {
+  if (!response.ok) {
     throw new Error(
-      responceData.details?.[0]?.message ??
-        responceData.message ??
+      responseData.details?.[0]?.message ??
+        responseData.message ??
         "Failed to store weather data",
     );
   }
 
-  return responceData;
+  return responseData;
+}
+
+export async function listWeatherFiles(): Promise<ListWeatherFilesResponse> {
+  const response = await fetch(`${API_BASE_URL}/list-weather-files`);
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.message ?? "Failed to get weather files");
+  }
+
+  return responseData;
 }
