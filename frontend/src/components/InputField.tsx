@@ -15,12 +15,18 @@ export default function InputField({
 }: InputFieldProps) {
   return (
     <div>
-      <label htmlFor={id}>{label}</label>
+      <label
+        htmlFor={id}
+        className="mb-2 block text-sm font-medium text-gray-700"
+      >
+        {label}
+      </label>
       <input
         id={id}
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
       />
     </div>
   );

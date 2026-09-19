@@ -38,12 +38,22 @@ function App() {
     : [];
 
   return (
-    <>
-      <WeatherForm />
-      <StoredFiles files={files} onFileSelect={handleFileSelect} />
-      <WeatherChart data={weatherDay} />
-      <WeatherTable data={weatherDay} />
-    </>
+    <main className="min-h-screen bg-gray-100">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Weather Explorer</h1>
+          <p className="mt-2 text-gray-600">
+            Fetch, Store and Visualize historical weather data.
+          </p>
+        </header>
+        <div className="space-y-6">
+          <WeatherForm />
+          <StoredFiles files={files} onFileSelect={handleFileSelect} />
+          <WeatherChart data={weatherDay} />
+          <WeatherTable data={weatherDay} />
+        </div>
+      </div>
+    </main>
   );
 }
 

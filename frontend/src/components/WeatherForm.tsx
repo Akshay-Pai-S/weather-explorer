@@ -79,22 +79,34 @@ export default function WeatherForm() {
   }
 
   return (
-    <section>
-      <h2>Weather Data</h2>
-      <form onSubmit={handleSubmit}>
-        {inputField.map((input) => (
-          <InputField
-            key={input.id}
-            id={input.id}
-            label={input.label}
-            type={input.type}
-            value={formData[input.field]}
-            onChange={(value) => handleChange(input.field, value)}
-          />
-        ))}
-        {error && (<p role="alert">{error}</p>)}
-        <button disabled={loading} type="submit"> {loading ? 'Storing Data...' : 'Store data'}</button>
-        {storedFile && (<p>Stored file : {storedFile}</p>)}
+    <section className="rounded-xl bg-white p-6 shadow-sm">
+      <h2 className="text-xl font-semibold text-gray-900">Weather Data</h2>
+      <p className="mt-1 text-sm text-gray-500">
+        Choose a location and date range to fetch the weather data
+      </p>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+        <div className="grid gap-5 sm:grid-cols-2">
+          {inputField.map((input) => (
+            <InputField
+              key={input.id}
+              id={input.id}
+              label={input.label}
+              type={input.type}
+              value={formData[input.field]}
+              onChange={(value) => handleChange(input.field, value)}
+            />
+          ))}
+          {error && <p role="alert">{error}</p>}
+          <button
+            disabled={loading}
+            type="submit"
+            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {" "}
+            {loading ? "Storing Data..." : "Fetch & Store data"}
+          </button>
+          {storedFile && <p>Stored file : {storedFile}</p>}
+        </div>
       </form>
     </section>
   );
