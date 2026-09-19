@@ -5,6 +5,7 @@ import { getWeatherFileContent, listWeatherFiles } from "./services/weatherApi";
 import StoredFiles from "./components/StoredFiles";
 import { transformWeatherData } from "./utils/transformWeather";
 import WeatherTable from "./components/WeatherTable";
+import WeatherChart from "./components/WeatherChart";
 
 function App() {
   const [files, setFiles] = useState<StoredFile[]>([]);
@@ -40,6 +41,7 @@ function App() {
     <>
       <WeatherForm />
       <StoredFiles files={files} onFileSelect={handleFileSelect} />
+      <WeatherChart data={weatherDay} />
       <WeatherTable data={weatherDay} />
     </>
   );

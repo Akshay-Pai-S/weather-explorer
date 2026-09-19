@@ -63,3 +63,7 @@ export type WeatherDay = {
 export type WeatherTableProps = {
   data: WeatherDay[];
 };
+
+export type WeatherChartProps = {
+  data: WeatherDay[];
+}
