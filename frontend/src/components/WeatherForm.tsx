@@ -1,7 +1,8 @@
-import { storeWeatherData } from "../services/weatherApi";
+import { ApiError, storeWeatherData } from "../services/weatherApi";
 import type {
   InputFieldConfig,
   WeatherFormData,
+  WeatherFormProps,
   WeatherRequest,
 } from "../types/weather";
 import InputField from "./InputField";
@@ -34,7 +35,7 @@ const inputField: InputFieldConfig[] = [
   },
 ];
 
-export default function WeatherForm() {
+export default function WeatherForm({ onStoreSuccess }: WeatherFormProps) {
   const [formData, setFormData] = useState({
     latitude: "",
     longitude: "",
@@ -43,20 +44,28 @@ export default function WeatherForm() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<keyof WeatherFormData, string>>
+  >({});
+  const [formError, setFormError] = useState("");
   const [storedFile, setStoredFile] = useState("");
 
-  function handleChange(feild: keyof WeatherFormData, value: string) {
+  function handleChange(field: keyof WeatherFormData, value: string) {
+    setFieldErrors((previous) => ({
+      ...previous,
+      [field]: undefined,
+    }));
+    setFormError("");
     setFormData((previous) => ({
       ...previous,
-      [feild]: value,
+      [field]: value,
     }));
   }
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    setError("");
+    setFormError("");
+    setFieldErrors({});
     setStoredFile("");
 
     const requestData: WeatherRequest = {
@@ -69,10 +78,36 @@ export default function WeatherForm() {
       setLoading(true);
       const response = await storeWeatherData(requestData);
       setStoredFile(response.file);
+      await onStoreSuccess();
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to store weather data",
-      );
+      if (error instanceof ApiError) {
+        const errors: Partial<Record<keyof WeatherFormData, string>> = {};
+
+        let generalError = "";
+
+        for (const detail of error.details) {
+          if (detail.field === "latitude") {
+            errors.latitude = detail.message;
+          } else if (detail.field === "longitude") {
+            errors.longitude = detail.message;
+          } else if (detail.field === "start_date") {
+            errors.startDate = detail.message;
+          } else if (detail.field === "end_date") {
+            errors.endDate = detail.message;
+          } else {
+            generalError = detail.message;
+          }
+        }
+
+        setFieldErrors(errors);
+        setFormError(generalError);
+      } else {
+        setFormError(
+          error instanceof Error
+            ? error.message
+            : "Failed to store weather data.",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -93,18 +128,25 @@ export default function WeatherForm() {
               label={input.label}
               type={input.type}
               value={formData[input.field]}
+              error={fieldErrors[input.field]}
               onChange={(value) => handleChange(input.field, value)}
             />
           ))}
-          {error && <p role="alert">{error}</p>}
           <button
             disabled={loading}
             type="submit"
             className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {" "}
             {loading ? "Storing Data..." : "Fetch & Store data"}
           </button>
+          {formError && (
+            <div
+              role="alert"
+              className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
+              {formError}
+            </div>
+          )}
           {storedFile && <p>Stored file : {storedFile}</p>}
         </div>
       </form>

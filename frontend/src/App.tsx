@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import WeatherForm from "./components/WeatherForm";
 import type { StoredFile, WeatherFileContent } from "./types/weather";
 import { getWeatherFileContent, listWeatherFiles } from "./services/weatherApi";
@@ -9,27 +9,51 @@ import WeatherChart from "./components/WeatherChart";
 
 function App() {
   const [files, setFiles] = useState<StoredFile[]>([]);
-  const [selectedWeather, setSelectWeather] =
+  const [selectedWeather, setSelectedWeather] =
     useState<WeatherFileContent | null>(null);
+  const [filesLoading, setFilesLoading] = useState(false);
+  const [filesError, setFilesError] = useState("");
+  const [selectedWeatherError, setSelectedWeatherError] = useState("");
+  const [selectedWeatherLoading, setSelectedWeatherLoading] = useState(false);
+
+  const loadFiles = useCallback(async () => {
+    try {
+      setFilesLoading(true);
+      setFilesError("");
+      const response = await listWeatherFiles();
+      setFiles(response.files);
+    } catch (error) {
+      setFilesError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load stored weather files",
+      );
+      console.log(error);
+    } finally {
+      setFilesLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadFiles = async () => {
-      try {
-        const response = await listWeatherFiles();
-        setFiles(response.files);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     loadFiles();
-  }, []);
+  }, [loadFiles]);
 
   async function handleFileSelect(fileName: string) {
     try {
+      setSelectedWeatherLoading(true);
+      setSelectedWeatherError("");
+      setSelectedWeather(null);
+
       const data = await getWeatherFileContent(fileName);
-      setSelectWeather(data);
+      setSelectedWeather(data);
     } catch (error) {
-      console.log(error);
+      setSelectedWeatherError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load the selected weather file",
+      );
+    } finally {
+      setSelectedWeatherLoading(false);
     }
   }
 
@@ -47,10 +71,30 @@ function App() {
           </p>
         </header>
         <div className="space-y-6">
-          <WeatherForm />
-          <StoredFiles files={files} onFileSelect={handleFileSelect} />
-          <WeatherChart data={weatherDay} />
-          <WeatherTable data={weatherDay} />
+          <WeatherForm onStoreSuccess={loadFiles} />
+          <StoredFiles
+            files={files}
+            onFileSelect={handleFileSelect}
+            loading={filesLoading}
+            error={filesError}
+          />
+          {selectedWeatherLoading ? (
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <p className="text-sm text-gray-500">Loading weather data...</p>
+            </div>
+          ) : selectedWeatherError ? (
+            <div
+              role="alert"
+              className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
+              {selectedWeatherError}
+            </div>
+          ) : (
+            <>
+              <WeatherChart data={weatherDay} />
+              <WeatherTable data={weatherDay} />
+            </>
+          )}
         </div>
       </div>
     </main>

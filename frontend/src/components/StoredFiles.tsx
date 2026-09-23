@@ -1,6 +1,11 @@
 import type { StoredFileProps } from "../types/weather";
 
-export default function StoredFiles({ files, onFileSelect }: StoredFileProps) {
+export default function StoredFiles({
+  files,
+  onFileSelect,
+  loading,
+  error,
+}: StoredFileProps) {
   return (
     <section className="rounded-xl bg-white p-6 shadow-sm">
       <div className="mb-5">
@@ -9,7 +14,14 @@ export default function StoredFiles({ files, onFileSelect }: StoredFileProps) {
           Select a stored weather dataset to view it's details
         </p>
       </div>
-      {files.length === 0 ? (
+      {loading ? (
+        <p className="text-sm text-gray-500">Loading stored files...</p>
+      ) : error ? (
+        <div
+          role="alert"
+          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >{error}</div>
+      ) : files.length === 0 ? (
         <p className="text-sm text-gray-500">No weather files found</p>
       ) : (
         <div className="space-y-3">
