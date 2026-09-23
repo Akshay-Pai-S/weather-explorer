@@ -12,6 +12,15 @@ export type InputFieldConfig = {
   field: keyof WeatherFormData;
 };
 
+export type InputFieldProps = {
+  id: string;
+  label: string;
+  type: "number" | "date";
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+};
+
 export type WeatherRequest = {
   latitude: number;
   longitude: number;
@@ -37,6 +46,8 @@ export type ListWeatherFilesResponse = {
 export type StoredFileProps = {
   files: StoredFile[];
   onFileSelect: (fileName: string) => void;
+  loading: boolean;
+  error: string;
 };
 
 export type WeatherFileContent = {
@@ -66,4 +77,19 @@ export type WeatherTableProps = {
 
 export type WeatherChartProps = {
   data: WeatherDay[];
-}
+};
+
+export type WeatherFormProps = {
+  onStoreSuccess: () => Promise<void>;
+};
+
+export type ValidationErrorDetail = {
+  field: string;
+  message: string;
+};
+
+export type ApiErrorResponse = {
+  status: string;
+  message: string;
+  details?: ValidationErrorDetail[];
+};
