@@ -5,9 +5,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from models.weather import WeatherRequest
-from services.weather_service import fetch_weather
-from services.storage_service import StorageService
+from app.models.weather import WeatherRequest
+from app.services.weather_service import fetch_weather
+from app.services.storage_service import StorageService
 
 app=FastAPI(title='Weather explorer')
 
