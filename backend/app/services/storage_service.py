@@ -1,7 +1,7 @@
 import json
 
 from google.cloud import storage
-from config import GCS_BUCKET_NAME, GCP_PROJECT_ID
+from app.config import GCS_BUCKET_NAME, GCP_PROJECT_ID
 
 class StorageService:
     def __init__(self):
