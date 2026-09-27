@@ -1,4 +1,6 @@
+import usePagination from "../hooks/usePagination";
 import type { StoredFileProps } from "../types/weather";
+import Pagination from "./Pagination";
 
 export default function StoredFiles({
   files,
@@ -6,6 +8,14 @@ export default function StoredFiles({
   loading,
   error,
 }: StoredFileProps) {
+  const {
+    currentRows: currentFiles,
+    currentPage,
+    totalPages,
+    rowsPerPage,
+    setCurrentPage,
+    handleRowsPerPage,
+  } = usePagination(files, 5);
   return (
     <section className="rounded-xl bg-white p-6 shadow-sm">
       <div className="mb-5">
@@ -20,12 +30,14 @@ export default function StoredFiles({
         <div
           role="alert"
           className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-        >{error}</div>
+        >
+          {error}
+        </div>
       ) : files.length === 0 ? (
         <p className="text-sm text-gray-500">No weather files found</p>
       ) : (
         <div className="space-y-3">
-          {files.map((file) => (
+          {currentFiles.map((file) => (
             <button
               key={file.name}
               type="button"
@@ -44,6 +56,16 @@ export default function StoredFiles({
             </button>
           ))}
         </div>
+      )}
+      {files.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          rowsPerPage={rowsPerPage}
+          pageSizeOptions={[5, 10, 20, 50]}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={handleRowsPerPage}
+        />
       )}
     </section>
   );
