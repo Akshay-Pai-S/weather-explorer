@@ -93,3 +93,12 @@ export type ApiErrorResponse = {
   message: string;
   details?: ValidationErrorDetail[];
 };
+
+export type PaginationProps = {
+  currentPage: number;
+  totalPages: number;
+  rowsPerPage: number;
+  pageSizeOptions: number[];
+  onPageChange: (page: number) => void;
+  onItemsPerPageChange: (value: number) => void;
+};
