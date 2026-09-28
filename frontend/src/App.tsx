@@ -17,7 +17,7 @@ function App() {
   const [selectedWeatherLoading, setSelectedWeatherLoading] = useState(false);
 
   const resultRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<HTMLDivElement>(null)
+  const chartRef = useRef<HTMLDivElement>(null);
 
   const loadFiles = useCallback(async () => {
     try {
@@ -70,17 +70,17 @@ function App() {
     ? transformWeatherData(selectedWeather)
     : [];
 
-  useEffect(()=>{
-    if(!selectedWeather){
-      return
+  useEffect(() => {
+    if (!selectedWeather) {
+      return;
     }
-     requestAnimationFrame(()=>{
+    requestAnimationFrame(() => {
       chartRef.current?.scrollIntoView({
         behavior: "smooth",
-        block: "start"
-      })
-    })
-  },[selectedWeather])
+        block: "start",
+      });
+    });
+  }, [selectedWeather]);
 
   return (
     <main className="min-h-screen bg-gray-100">
