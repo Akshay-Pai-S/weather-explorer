@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import WeatherForm from "./components/WeatherForm";
 import type { StoredFile, WeatherFileContent } from "./types/weather";
 import { getWeatherFileContent, listWeatherFiles } from "./services/weatherApi";
@@ -15,6 +15,9 @@ function App() {
   const [filesError, setFilesError] = useState("");
   const [selectedWeatherError, setSelectedWeatherError] = useState("");
   const [selectedWeatherLoading, setSelectedWeatherLoading] = useState(false);
+
+  const resultRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<HTMLDivElement>(null);
 
   const loadFiles = useCallback(async () => {
     try {
@@ -39,6 +42,12 @@ function App() {
   }, [loadFiles]);
 
   async function handleFileSelect(fileName: string) {
+    requestAnimationFrame(() => {
+      resultRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
     try {
       setSelectedWeatherLoading(true);
       setSelectedWeatherError("");
@@ -61,6 +70,18 @@ function App() {
     ? transformWeatherData(selectedWeather)
     : [];
 
+  useEffect(() => {
+    if (!selectedWeather) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      chartRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }, [selectedWeather]);
+
   return (
     <main className="min-h-screen bg-gray-100">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -78,23 +99,25 @@ function App() {
             loading={filesLoading}
             error={filesError}
           />
-          {selectedWeatherLoading ? (
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <p className="text-sm text-gray-500">Loading weather data...</p>
-            </div>
-          ) : selectedWeatherError ? (
-            <div
-              role="alert"
-              className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
-              {selectedWeatherError}
-            </div>
-          ) : (
-            <>
-              <WeatherChart data={weatherDay} />
-              <WeatherTable data={weatherDay} />
-            </>
-          )}
+          <div ref={resultRef} className="scroll-mt-6">
+            {selectedWeatherLoading ? (
+              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <p className="text-sm text-gray-500">Loading weather data...</p>
+              </div>
+            ) : selectedWeatherError ? (
+              <div
+                role="alert"
+                className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+              >
+                {selectedWeatherError}
+              </div>
+            ) : (
+              <div ref={chartRef} className="space-y-6 scroll-mt-6">
+                <WeatherChart data={weatherDay} />
+                <WeatherTable data={weatherDay} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </main>
