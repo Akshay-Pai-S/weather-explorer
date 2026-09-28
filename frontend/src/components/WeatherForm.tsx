@@ -50,6 +50,10 @@ export default function WeatherForm({ onStoreSuccess }: WeatherFormProps) {
   const [formError, setFormError] = useState("");
   const [storedFile, setStoredFile] = useState("");
 
+  const today = new Date();
+  today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+  const maxDate = today.toISOString().split("T")[0];
+
   function handleChange(field: keyof WeatherFormData, value: string) {
     setFieldErrors((previous) => ({
       ...previous,
@@ -130,6 +134,7 @@ export default function WeatherForm({ onStoreSuccess }: WeatherFormProps) {
               value={formData[input.field]}
               error={fieldErrors[input.field]}
               onChange={(value) => handleChange(input.field, value)}
+              max={maxDate}
             />
           ))}
           <button

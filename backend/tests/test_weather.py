@@ -46,3 +46,11 @@ def test_date_range_exceed_31_days():
 
     with pytest.raises(ValidationError):
         WeatherRequest(**data)
+
+def test_date_cannot_be_future():
+    data=valid_request()
+    data['start_date'] = '2099-09-01'
+    data['end_date'] = '2099-09-10'
+    
+    with pytest.raises(ValidationError):
+        WeatherRequest(**data)

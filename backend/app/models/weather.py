@@ -14,6 +14,11 @@ class WeatherRequest(BaseModel):
                 "Start Date must be before or equal to End Date"
             )
 
+        if self.end_date > date.today():
+            raise ValueError(
+                "Dates cannot be in the future"
+            )
+
         days = (self.end_date - self.start_date).days + 1
         if days > 31:
             raise ValueError(
