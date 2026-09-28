@@ -19,6 +19,7 @@ export type InputFieldProps = {
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  max?: string;
 };
 
 export type WeatherRequest = {
